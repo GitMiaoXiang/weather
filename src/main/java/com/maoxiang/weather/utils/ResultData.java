@@ -16,7 +16,7 @@ public class ResultData<T> {
 
     private int code;
 
-    private String message;
+    private String desc;
 
     private T data;
 
@@ -24,8 +24,8 @@ public class ResultData<T> {
         return code;
     }
 
-    public String getMessage() {
-        return message;
+    public String getDesc() {
+        return desc;
     }
 
     public T getData() {
@@ -38,6 +38,6 @@ public class ResultData<T> {
 
     public void setResponseMessage(ResponseEnum responseMessage) {
         this.code = responseMessage.getCode();
-        this.message = responseMessage.getMessage();
+        this.desc = responseMessage.getMessage();
     }
 }
