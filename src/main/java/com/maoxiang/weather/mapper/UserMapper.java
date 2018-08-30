@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
  * Description: 
  */
 @Mapper
-@Repository
+@Repository  //注入的时候不会报错，可有可无
 public interface UserMapper extends MyMapper<User> {
 
     //数据库字段与实体类不一致时，可以配置映射

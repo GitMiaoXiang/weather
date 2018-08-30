@@ -18,4 +18,6 @@ public class WeatherResponse {
     private Object data;
     private int status;
     private String desc;
+
+    public static final int OK = 1000;  //
 }

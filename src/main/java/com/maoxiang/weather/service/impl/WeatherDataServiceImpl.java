@@ -2,14 +2,19 @@ package com.maoxiang.weather.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maoxiang.weather.Base.AddrConst;
+import com.maoxiang.weather.Base.HttpAPIService;
 import com.maoxiang.weather.Base.WeatherResponse;
+import com.maoxiang.weather.constenum.ResponseEnum;
+import com.maoxiang.weather.entity.Weather;
 import com.maoxiang.weather.service.IWeatherService;
+import com.maoxiang.weather.utils.RestResultGenerator;
+import com.maoxiang.weather.utils.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author ShangGuanMingPeng
@@ -17,34 +22,68 @@ import java.io.IOException;
  * Description:
  */
 @Service
-public class WeatherDataServiceImpl implements IWeatherService  {
+public class WeatherDataServiceImpl implements IWeatherService {
 
     @Autowired
-    private RestTemplate restTemplate;
+    private HttpAPIService httpAPIService;
 
+    @Autowired
+    private StringRedisTemplate redisTemplate;
+
+    /**
+     * 根据城市id获取
+     * @param cityId
+     * @return
+     * @throws Exception
+     */
     @Override
-    public WeatherResponse getDataByCityId(String cityId) throws IOException {
+    public ResultData<Weather> getDataByCityId(String cityId) throws Exception {
         String url = AddrConst.ADDRESS_QUERY_WEATHER_INFO + "citykey=" + cityId;
-        WeatherResponse resultData = getData(url);
+        ResultData resultData = getData(url);
         return resultData;
     }
 
+    /**
+     * 根据城市名字获取信息
+     * @param cityName
+     * @return
+     * @throws Exception
+     */
     @Override
-    public WeatherResponse getDataByName(String cityName) throws IOException {
+    public ResultData<Weather> getDataByName(String cityName) throws Exception {
         String url = AddrConst.ADDRESS_QUERY_WEATHER_INFO + "city=" + cityName;
-        WeatherResponse resultData = getData(url);
+        ResultData resultData = getData(url);
         return resultData;
     }
 
-    private WeatherResponse getData(String url) throws IOException {
-        ResponseEntity<String> weatherStr = restTemplate.getForEntity(url, String.class);
-        ObjectMapper mapper = new ObjectMapper();
-        WeatherResponse resultData;
-        String strBody = null;
-        if(weatherStr.getStatusCodeValue()==200){
-            strBody = weatherStr.getBody();
+    /**
+     * 获取天气数据
+     *
+     * @param url
+     * @return
+     */
+    private ResultData getData(String url) throws Exception {
+        String strBody;
+        ValueOperations<String, String> ops = redisTemplate.opsForValue();
+        if(redisTemplate.hasKey(url)){
+            strBody = ops.get(url);
+        }else{
+            strBody = httpAPIService.doGet(url);
         }
-        resultData = mapper.readValue(strBody, WeatherResponse.class);
+        ResultData resultData;
+
+        if (strBody != null) {
+            ObjectMapper mapper = new ObjectMapper();
+            WeatherResponse weatherResponse = mapper.readValue(strBody, WeatherResponse.class);
+            if (weatherResponse.getStatus() == WeatherResponse.OK) {
+                resultData = RestResultGenerator.successResult(weatherResponse.getData(), ResponseEnum.SUCCESS);
+                ops.set(url,strBody, 1800, TimeUnit.SECONDS);
+            } else {
+                resultData = RestResultGenerator.errorResult(ResponseEnum.FAILED);
+            }
+        }else{
+            resultData = RestResultGenerator.errorResult(ResponseEnum.FAILED);
+        }
         return resultData;
     }
 }

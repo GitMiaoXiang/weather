@@ -1,8 +1,7 @@
 package com.maoxiang.weather.service;
 
-import com.maoxiang.weather.Base.WeatherResponse;
-
-import java.io.IOException;
+import com.maoxiang.weather.entity.Weather;
+import com.maoxiang.weather.utils.ResultData;
 
 /**
  * @author ShangGuanMingPeng
@@ -12,9 +11,9 @@ import java.io.IOException;
 public interface IWeatherService {
 
 
-    WeatherResponse getDataByCityId(String cityId) throws IOException;
+    ResultData<Weather> getDataByCityId(String cityId) throws Exception;
 
-    WeatherResponse getDataByName(String cityName) throws IOException;
+    ResultData<Weather> getDataByName(String cityName) throws Exception;
 
 
 }

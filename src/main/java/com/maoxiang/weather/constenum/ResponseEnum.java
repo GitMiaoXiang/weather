@@ -10,7 +10,8 @@ public enum ResponseEnum {
     SYSTEM_EXCEPTION(0,"系统异常"),
     SUCCESS(1,"请求成功"),
     FAILED(2,"请求失败"),
-    BUSINESS_EXCEPTION(3,"业务异常");
+    BUSINESS_EXCEPTION(3,"业务异常"),
+    REQUEST_DATA_FAILD(4,"获取数据失败");
 
     private int code;
 
