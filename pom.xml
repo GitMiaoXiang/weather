@@ -29,7 +29,8 @@
 		<pagehelper.version>1.0.0</pagehelper.version>
 		<tk.mybatis.version>2.0.3</tk.mybatis.version>
 		<httpclient.version>4.5.3</httpclient.version>
-		<redis.version>2.0.4.RELEASE</redis.version>
+		<redis.version>1.4.7.RELEASE</redis.version>
+		<quartz.version>2.3.0</quartz.version>
 	</properties>
 
 	<dependencies>
@@ -106,19 +107,25 @@
 			<version>${httpclient.version}</version>
 		</dependency>
 
-		<!-- redis -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-redis</artifactId>
-			<version>${redis.version}</version>
-		</dependency>
-
-		<!--  springboot整合 redis -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-redis</artifactId>
 			<version>RELEASE</version>
 		</dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+			<version>RELEASE</version>
+        </dependency>
+
+		<!--quartz-->
+		<dependency>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz</artifactId>
+			<version>${quartz.version}</version>
+		</dependency>
+
 
 
 

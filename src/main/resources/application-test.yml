@@ -2,7 +2,7 @@ spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/blog_database?characterEncoding: utf-8&autoReconnect: true&failOverReadOnly: false&useSSL: false
+    url: jdbc:mysql://localhost:3306/blog_database?characterEncoding=utf-8&autoReconnect=true&failOverReadOnly=false&useSSL=false
     username: root
     password: sa
 
@@ -20,25 +20,28 @@ spring:
     testOnReturn: false
     # 打开PSCache，并且指定每个连接上PSCache的大小
     poolPreparedStatements: true
-    connectionProperties: druid.stat.mergeSql: true;druid.stat.slowSqlMillis: 5000
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
     # 合并多个DruidDataSource的监控数据
     useGlobalDataSourceStat: true
 
-    #redis
+  #redis
   redis:
-    host: 192.168.5.8
+    host: localhost
     port: 6379
-    password: pbids2008
+    password:
     database: 1
     timeout: 5000
-    pool:
-      # 连接池最大阻塞等待时间（使用负值表示没有限制）
-      max-wait: -1
-      # 连接池中的最大空闲连接
-      max-idle: 8
-      # 连接池中的最小空闲连接
-      min-idle: 0
-      # 连接池最大连接数（使用负值表示没有限制）
-      max-active: 8
+    lettuce:
+      pool:
+        # 连接池最大连接数（使用负值表示没有限制） 默认 8
+        max-active: 8
+        # 连接池最大阻塞等待时间（使用负值表示没有限制） 默认 -1
+        max-wait: -1
+        # 连接池中的最大空闲连接 默认 8
+        max-idle: 8
+        # 连接池中的最小空闲连接 默认 0
+        min-idle: 0
+
+
 
 

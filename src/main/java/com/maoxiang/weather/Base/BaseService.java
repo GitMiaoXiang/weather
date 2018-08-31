@@ -74,7 +74,7 @@ public class BaseService<T extends BaseEntity> implements IBaseService<T>{
         // 根据条件查询
         List<T> list = mapper.select(record);
         // 返回分页信息
-        return new PageInfo<T>(list);
+        return new PageInfo<>(list);
     }
 
     /**

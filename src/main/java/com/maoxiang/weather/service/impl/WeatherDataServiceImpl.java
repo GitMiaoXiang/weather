@@ -5,16 +5,14 @@ import com.maoxiang.weather.Base.AddrConst;
 import com.maoxiang.weather.Base.HttpAPIService;
 import com.maoxiang.weather.Base.WeatherResponse;
 import com.maoxiang.weather.constenum.ResponseEnum;
+import com.maoxiang.weather.dao.RedisDao;
 import com.maoxiang.weather.entity.Weather;
 import com.maoxiang.weather.service.IWeatherService;
 import com.maoxiang.weather.utils.RestResultGenerator;
 import com.maoxiang.weather.utils.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author ShangGuanMingPeng
@@ -29,6 +27,9 @@ public class WeatherDataServiceImpl implements IWeatherService {
 
     @Autowired
     private StringRedisTemplate redisTemplate;
+
+    @Autowired
+    private RedisDao redisDao;
 
     /**
      * 根据城市id获取
@@ -64,20 +65,19 @@ public class WeatherDataServiceImpl implements IWeatherService {
      */
     private ResultData getData(String url) throws Exception {
         String strBody;
-        ValueOperations<String, String> ops = redisTemplate.opsForValue();
-        if(redisTemplate.hasKey(url)){
-            strBody = ops.get(url);
+        ResultData resultData;
+        Boolean aBoolean = redisTemplate.hasKey(url);
+        if(aBoolean){
+            strBody = redisDao.stringGetStringByKey(url);
         }else{
             strBody = httpAPIService.doGet(url);
+            redisDao.stringSetString(url,strBody);
         }
-        ResultData resultData;
-
         if (strBody != null) {
             ObjectMapper mapper = new ObjectMapper();
             WeatherResponse weatherResponse = mapper.readValue(strBody, WeatherResponse.class);
             if (weatherResponse.getStatus() == WeatherResponse.OK) {
                 resultData = RestResultGenerator.successResult(weatherResponse.getData(), ResponseEnum.SUCCESS);
-                ops.set(url,strBody, 1800, TimeUnit.SECONDS);
             } else {
                 resultData = RestResultGenerator.errorResult(ResponseEnum.FAILED);
             }
